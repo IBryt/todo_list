@@ -7,5 +7,5 @@ abstract class TodoService {
 
   Future<Either<Failure, TaskEntity>> add(TaskEntity task);
 
-  Future<Either<Failure, TaskEntity>> remove(int id);
+  Future<Either<Failure, void>> remove(int id);
 }

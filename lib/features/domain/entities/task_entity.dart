@@ -1,14 +1,28 @@
 import 'package:equatable/equatable.dart';
 
 class TaskEntity with EquatableMixin {
+  final int id;
   final String text;
   final bool isDone;
 
   TaskEntity({
+    required this.id,
     required this.text,
     required this.isDone,
   });
 
   @override
-  List<Object?> get props => [text, isDone];
+  List<Object?> get props => [id, text, isDone];
+
+  TaskEntity copyWith({
+    int? id,
+    String? text,
+    bool? isDone,
+  }) {
+    return TaskEntity(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      isDone: isDone ?? this.isDone,
+    );
+  }
 }
