@@ -1,31 +1,30 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:todo_list/ui/navigation/app_navigation_impl.dart';
 import 'package:todo_list/ui/theme/app_theme.dart';
 
-abstract class AppNavigation {
-  Map<String, Widget Function(BuildContext)> get routes;
-}
-
 class MyApp extends StatelessWidget {
-  final AppTheme appTheme;
   final AppNavigation appNavigation;
 
   const MyApp({
     Key? key,
-    required this.appTheme,
     required this.appNavigation,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.read<AppTheme>();
+
     return AdaptiveTheme(
       light: appTheme.kLightMode,
       dark: appTheme.kDarkMode,
-      initial: AdaptiveThemeMode.system,
-      builder: (light, dark) => MaterialApp(
-        theme: light,
+      initial:
+          appTheme.isLight ? AdaptiveThemeMode.light : AdaptiveThemeMode.dark,
+      builder: (theme, dark) => MaterialApp(
+        theme: theme,
         darkTheme: dark,
         localizationsDelegates: const [
           S.delegate,
@@ -34,6 +33,7 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: S.delegate.supportedLocales,
+        initialRoute: appNavigation.initialRoute,
         routes: appNavigation.routes,
       ),
     );

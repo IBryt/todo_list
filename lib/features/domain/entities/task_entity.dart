@@ -11,6 +11,11 @@ class TaskEntity with EquatableMixin {
     required this.isDone,
   });
 
+  const TaskEntity.empty()
+      : id = 0,
+        text = '',
+        isDone = false;
+
   @override
   List<Object?> get props => [id, text, isDone];
 

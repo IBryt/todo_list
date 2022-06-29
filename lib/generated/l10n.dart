@@ -49,6 +49,56 @@ class S {
   static S? maybeOf(BuildContext context) {
     return Localizations.of<S>(context, S);
   }
+
+  /// `hive error message`
+  String get hive_error {
+    return Intl.message(
+      'hive error message',
+      name: 'hive_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `unexpected error message`
+  String get unexpected_error {
+    return Intl.message(
+      'unexpected error message',
+      name: 'unexpected_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `todo`
+  String get todo_app_bar_title {
+    return Intl.message(
+      'todo',
+      name: 'todo_app_bar_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tasks`
+  String get todo_header {
+    return Intl.message(
+      'Tasks',
+      name: 'todo_header',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The task can't be empty.`
+  String get error_message_empty_task {
+    return Intl.message(
+      'The task can\'t be empty.',
+      name: 'error_message_empty_task',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,28 +1,77 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:todo_list/features/data/data_provider/hive_box_provider.dart';
+import 'package:todo_list/features/data/datasources/task_hive_data_sources.dart';
+import 'package:todo_list/features/data/repositories/todo_repository_impl.dart';
+import 'package:todo_list/features/domain/repository/todo_repository.dart';
+import 'package:todo_list/features/presentation/bloc/todo_bloc/todo_cubit.dart';
+import 'package:todo_list/screen_factory.dart';
 import 'package:todo_list/ui/navigation/app_navigation_impl.dart';
 import 'package:todo_list/ui/theme/app_theme.dart';
-import 'package:todo_list/ui/widgets/my_app/my_app.dart';
 
-final _di = GetIt.instance;
+Future<void> init() async {
+  final di = GetIt.instance;
 
-Widget makeApp() => MyApp(
-      appTheme: _di<AppTheme>(),
-      appNavigation: _di<AppNavigation>(),
-    );
+  // Core
+  di.registerLazySingleton<ScreenFactory>(
+    () => const ScreenFactoryImpl(),
+  );
 
-void init() {
-  //Core
-  _di.registerSingleton<ScreenFactory>(const ScreenFactoryImpl());
-  _di.registerSingleton<AppNavigation>(AppNavigationImpl(_di<ScreenFactory>()));
-  _di.registerSingleton<AppTheme>(const AppThemeImpl());
-}
+  di.registerLazySingleton<AppNavigation>(
+    () => AppNavigationImpl(screenFactory: di<ScreenFactory>()),
+  );
 
-class ScreenFactoryImpl implements ScreenFactory {
-  const ScreenFactoryImpl();
+  final appTheme = AppThemeImpl();
+  await appTheme.init();
 
-  @override
-  Widget makeMainScreen() {
-    return const SizedBox.shrink();
-  }
+  di.registerLazySingleton<AppTheme>(
+    () => appTheme,
+  );
+
+  //Blocs
+
+  di.registerFactory(
+    () => TodoCubit(
+      todoRepository: di<TodoRepository>(),
+    ),
+  );
+
+  // UseCases
+
+  // di.registerLazySingleton(
+  //   () => AddTask(
+  //     todoService: di<TodoRepository>(),
+  //   ),
+  // );
+  //
+  // di.registerLazySingleton(
+  //   () => GetAllTask(
+  //     todoService: di<TodoRepository>(),
+  //   ),
+  // );
+  //
+  // di.registerLazySingleton(
+  //   () => RemoveTask(
+  //     todoService: di<TodoRepository>(),
+  //   ),
+  // );
+
+  // Repository
+
+  di.registerLazySingleton<TodoRepository>(
+    () => TodoRepositoryImpl(
+      taskHiveDataSources: di<TaskHiveDataSources>(),
+    ),
+  );
+
+  // DataSources
+
+  di.registerLazySingleton<TaskHiveDataSources>(
+    () => TaskHiveDataSourcesImpl(
+      hiveBoxProvider: di<HiveBoxProvider>(),
+    ),
+  );
+
+  di.registerLazySingleton<HiveBoxProvider>(
+    () => HiveBoxProviderImpl(),
+  );
 }

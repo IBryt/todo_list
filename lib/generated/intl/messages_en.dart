@@ -21,5 +21,14 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "error_message_empty_task":
+            MessageLookupByLibrary.simpleMessage("The task can\'t be empty."),
+        "hive_error":
+            MessageLookupByLibrary.simpleMessage("hive error message"),
+        "todo_app_bar_title": MessageLookupByLibrary.simpleMessage("todo"),
+        "todo_header": MessageLookupByLibrary.simpleMessage("Tasks"),
+        "unexpected_error":
+            MessageLookupByLibrary.simpleMessage("unexpected error message")
+      };
 }

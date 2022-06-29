@@ -1,15 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:todo_list/core/error/exception.dart';
 import 'package:todo_list/core/error/failure.dart';
 import 'package:todo_list/features/data/datasources/task_hive_data_sources.dart';
 import 'package:todo_list/features/data/models/task_model.dart';
 import 'package:todo_list/features/domain/entities/task_entity.dart';
-import 'package:todo_list/features/domain/services/todo_service.dart';
+import 'package:todo_list/features/domain/repository/todo_repository.dart';
 
-class TodoRepositoryImpl implements TodoService {
+class TodoRepositoryImpl implements TodoRepository {
   final TaskHiveDataSources taskHiveDataSources;
 
-  TodoRepositoryImpl(this.taskHiveDataSources);
+  TodoRepositoryImpl({
+    required this.taskHiveDataSources,
+  });
 
   @override
   Future<Either<Failure, TaskEntity>> add(TaskEntity task) async {
@@ -36,13 +37,25 @@ class TodoRepositoryImpl implements TodoService {
     });
   }
 
+  @override
+  Future<Either<Failure, void>> update(TaskEntity task) {
+    return _wrapperEither(() async {
+      await taskHiveDataSources.update(task.id, TaskModel.fromEntity(task));
+    });
+  }
+
   Future<Either<Failure, T>> _wrapperEither<T>(
       Future<T> Function() func) async {
     try {
       final value = await func();
       return Right(value);
-    } on HiveException {
+    } on Exception {
       return Left(HiveFailure());
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await taskHiveDataSources.close();
   }
 }

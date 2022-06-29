@@ -8,42 +8,49 @@ abstract class TaskHiveDataSources {
   Future<int> add(TaskModel task);
 
   Future<void> remove(int id);
+
+  Future<void> update(int id, TaskModel task);
+
+  Future<void> close();
 }
 
 class TaskHiveDataSourcesImpl implements TaskHiveDataSources {
   final HiveBoxProvider hiveBoxProvider;
 
-  TaskHiveDataSourcesImpl(this.hiveBoxProvider);
+  Future<Box<TaskModel>>? _taskBox;
+
+  TaskHiveDataSourcesImpl({
+    required this.hiveBoxProvider,
+  });
+
+  Future<Box<TaskModel>> get _box {
+    _taskBox ??= hiveBoxProvider.openTasksBox();
+    return _taskBox!;
+  }
 
   @override
   Future<int> add(TaskModel task) async {
-    return await _wrapperOperation<Future<int>>(
-      hiveBoxProvider.openTasksBox(),
-      (box) async => await box.add(task),
-    );
+    return (await _box).add(task);
   }
 
   @override
   Future<List<TaskModel>> getAll() async {
-    return _wrapperOperation<List<TaskModel>>(
-      hiveBoxProvider.openTasksBox(),
-      (box) => box.values.toList() as List<TaskModel>,
-    );
+    return (await _box).values.toList();
   }
 
   @override
   Future<void> remove(int id) async {
-    return _wrapperOperation<void>(
-      hiveBoxProvider.openTasksBox(),
-      (box) async => await box.delete(id),
-    );
+    return (await _box).delete(id);
   }
 
-  Future<T> _wrapperOperation<T>(
-      Future<Box<TaskModel>> box, T Function(Box box) function) async {
-    final _box = await box;
-    final result = function(_box);
-    _box.close();
-    return result;
+  @override
+  Future<void> update(int id, TaskModel task) async {
+    (await _box).put(id, task);
+  }
+
+  @override
+  Future<void> close() async {
+    await hiveBoxProvider.closeBox((await _box));
+    _taskBox = null;
   }
 }
