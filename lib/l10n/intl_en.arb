@@ -1,0 +1,7 @@
+{
+  "hive_error": "hive error message",
+  "unexpected_error": "unexpected error message",
+  "todo_app_bar_title": "todo",
+  "todo_header": "Tasks",
+  "error_message_empty_task": "The task can't be empty."
+}
